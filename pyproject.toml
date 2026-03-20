@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cerebra"
+version = "0.1.0"
+description = "Multi-modal patient-level disease prediction"
+requires-python = ">=3.10"
+authors = [
+  { name="Sheng Liu", email="shengliu888@gmail.com" },
+]
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cerebra*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.py"]
