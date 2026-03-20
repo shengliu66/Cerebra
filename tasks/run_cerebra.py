@@ -54,11 +54,12 @@ def parse_args():
         default=False,
         help="Time to event to use.",
     )
+
     parser.add_argument(
-        "--volume",
-        type=bool,
-        default=True,
-        help="Volume to use.",
+        "--query",
+        type=str,
+        default=None,
+        help="User query, e.g. Predict dementia risk within 3 years for patient id 123.",
     )
 
     return parser.parse_args()
@@ -66,19 +67,24 @@ def parse_args():
 def main():
     args = parse_args()
 
+    if args.query:
+        task = args.query
+    else:
+        task = f"Predict dementia risk after {args.year} years for patient id {args.patient_id}"
+
     try:
         # Initialize SuperAgent
         orchestrator = SuperAgent(llm_engine_name=args.llm_engine)
 
         # Let SuperAgent handle everything including data loading
         result_metadata = orchestrator.run(
-            task=f"Predict dementia risk after {args.year} years for patient id {args.patient_id}",
+            task=task,
             patient_id=args.patient_id,
             year=args.year,
             institution=args.institution,
             diagnosis=args.diagnosis,
             time_to_event=args.time_to_event,
-            volume=args.volume
+            volume=True
         )
 
         # Extract and display results
