@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cerebra"
-version = "0.1.0"
+version = "1.2.0"
 description = "Multi-modal patient-level disease prediction"
 requires-python = ">=3.10"
 authors = [
-  { name="Sheng Liu", email="shengliu888@gmail.com" },
+  { name="Sheng Liu, Long Cheng", email="shengliu888@gmail.com" },
 ]
 readme = "README.md"
 classifiers = [
