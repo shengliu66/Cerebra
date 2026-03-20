@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="figure/Cerebra_logo.png" alt="Cerebra Logo" width="220" />
+  <img src="figure/Cerebra_logo.png" alt="Cerebra Logo" width="460" />
 </p>
-
-<h1 align="center">Cerebra</h1>
 
 <p align="center">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" />
