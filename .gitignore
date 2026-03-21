@@ -37,6 +37,9 @@ Thumbs.db
 .env.*
 *.env
 
+# Tests
+tests/
+
 # Project-generated outputs
 logs/
 cerebra_cache/

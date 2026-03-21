@@ -70,46 +70,105 @@ CEREBRA_EHR_HEADER_PATH=/path/to/ehr_headers.txt
 MRI_BASE_PATH=/path/to/MRI_scans/
 ```
 
-## 🗂️ Data (Database) Setup
+## 🗂️ Data Agent
 
-This project uses file-based clinical datasets (pickle/CSV), not a SQL database.
-The data loading logic is implemented in `cerebra/agents/data_agent.py`.
+`DataAgent` (`cerebra/agents/data_agent.py`) is the entry point for all data access. It supports four operational modes selected via the `mode` argument.
 
+### Modes
 
-### 📍 dataset format
+| Mode | Data source | Use case |
+|---|---|---|
+| `local` | Pre-processed `.pkl` / `.csv` files on disk | Offline experiments, reproducible runs |
+| `training` | PostgreSQL via natural-language query | Retrieve cohort + labels, split into train/val/test |
+| `inference` | PostgreSQL via natural-language query | Retrieve a single patient's longitudinal history (no labels) |
+| `exploration` | PostgreSQL via natural-language query | Ad hoc: schema inspection, cohort discovery, patient history, similar-patient search |
 
-- NYU rolling data root: `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/20251207/rolling_not_long_island/`
-- LongIsland rolling data root: `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/20251207/rolling_long_island/`
-- Diagnosis data:
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/diagnosis_not_long_island/`
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/diagnosis_long_island/`
-- Time-to-event data:
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/mri_indexed_not_long_island/time_to_event/`
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/mri_indexed_long_island/time_to_event/`
+---
 
-### 📦 Required files (by task mode)
+### `local` mode
 
-For standard prediction (`diagnosis=False`, `time_to_event=False`), data is loaded from:
-`<root>/180days_blackout_<year>yr_label/`
+Pass a `file_paths` dict mapping split/role names to file paths. Files can be `.pkl` (pickled Python objects) or `.csv`.
 
-Common label files:
+```python
+from cerebra.agents.data_agent import DataAgent
 
-- `Y_train.pkl`
-- `Y_val.pkl`
-- `Y_test.pkl`
+agent = DataAgent()
+metadata = agent.run(
+    mode="local",
+    file_paths={
+        "train_data":         "path/to/X_train.pkl",
+        "train_labels":       "path/to/Y_train.pkl",
+        "validation_data":    "path/to/X_val.pkl",
+        "validation_labels":  "path/to/Y_val.pkl",
+        "test_data":          "path/to/X_test.pkl",
+        "test_labels":        "path/to/Y_test.pkl",
+        "demographics":       "path/to/demographics.pkl",  # optional
+    },
+    agent_name="ehr_agent",   # "ehr_agent" | "note_agent" | "image_agent"
+    patient_id=0,             # optional: slice test split to one patient
+)
+```
 
-Agent-specific feature files:
+#### Required data formats per agent
 
-- EHR: `X_ehr_train_4447_header_phecode.pkl`, `X_ehr_val_4447_header_phecode.pkl`, `X_ehr_test_4447_header_phecode.pkl`
-- Notes: `X_note_train.pkl`, `X_note_val.pkl`, `X_note_test.pkl`
-- MRI path mode: `X_mri_train.pkl`, `X_mri_val.pkl`, `X_mri_test.pkl`
-- MRI volume mode: `X_mri_volume_train.csv`, `X_mri_volume_val.csv`, `X_mri_volume_test.csv`
+**`ehr_agent`**
+- `*_data`: `list[scipy.sparse.csr_matrix]` — one sparse matrix per patient, shape `(timesteps, n_features)`
+- `*_labels`: `list[int]` — binary labels (0 / 1), one per patient
 
-If `time_to_event=True`, additional label files are required:
+**`note_agent`**
+- `*_data`: `list[list[str]]` — outer list is patients; inner list is that patient's clinical notes as strings
+- `*_labels`: `list[int]`
 
-- `Y_time_to_event_train.pkl`
-- `Y_time_to_event_val.pkl`
-- `Y_time_to_event_test.pkl`
+**`image_agent`**
+- `*_data`: `list[str]` — file paths to pre-processed MRI files, one per patient
+- `*_labels`: `list[int]`
+
+**`demographics`** (optional, used when `patient_id` is set): `list[dict]`, one dict per patient, containing `age` (float), `gender` (str), and lab feature keys for APOE and memory status (int, value > 0 means positive).
+
+---
+
+### SQL modes (`training` / `inference` / `exploration`)
+
+These modes require a running PostgreSQL database and an OpenAI-compatible LLM for natural-language-to-SQL translation.
+
+Each call targets a single modality. Run once per modality needed.
+
+```python
+# Training: retrieve cohort + labels and split into train/val/test (one modality per call)
+agent.run(
+    mode="training",
+    postgresql_database_url="postgresql+psycopg2://user:pass@host:5432/db",
+    natural_language_query=(
+        "I want to analyze dementia risk over the next 2 years, "
+        "from EHR Records, Clinical Notes, and MRI Imaging."
+    ),
+    modality="ehr",   # one of: "ehr" | "notes" | "images"
+    train_ratio=0.70,
+    val_ratio=0.15,
+    balance=True,
+)
+
+# Inference: single patient longitudinal history (no outcome labels)
+agent.run(
+    mode="inference",
+    postgresql_database_url="postgresql+psycopg2://user:pass@host:5432/db",
+    patient_id="0",
+    natural_language_query=(
+        "Retrieve the full medical history for Patient MRN_12345 to assess "
+        "dementia risk, including EHR records, clinical notes, and MRI imaging."
+    ),
+    modality="notes",   # one of: "ehr" | "notes" | "images"
+)
+
+# Exploration: ad hoc database interrogation
+agent.run(
+    mode="exploration",
+    postgresql_database_url="postgresql+psycopg2://user:pass@host:5432/db",
+    natural_language_query="Give me diabetes-related EHR records for patient MRN_12345.",
+    exploration_type="patient_history",  # "schema" | "cohort" | "patient_history" | "similar_patients"
+    patient_id="MRN_12345",
+)
+```
 
 ## 🚀 Running the system
 

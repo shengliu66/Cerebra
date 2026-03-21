@@ -6,6 +6,12 @@ import uuid
 
 # cerebra/agents/note_agent.py
 class NoteAgent(LightweightAgent):
+    data_descriptions = {
+        "train_data":      "Note data for training, list of strings",
+        "validation_data": "Note data for validation, list of strings",
+        "test_data":       "Note data for testing, list of strings",
+    }
+
     def __init__(self, llm_engine_name: str = "gpt-4o"):
         super().__init__(
             agent_name="note_agent",

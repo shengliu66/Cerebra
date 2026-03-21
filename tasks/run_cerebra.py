@@ -33,26 +33,26 @@ def parse_args():
         "--year",
         type=int,
         default=1,
-        help="Year of the data to use.",
+        help="Prediction horizon in years (used in the task description and stored as metadata).",
     )
 
     parser.add_argument(
         "--institution",
         type=str,
         default="NYU",
-        help="Institution to use.",
+        help="Institution name (stored as metadata; does not affect data loading).",
     )
     parser.add_argument(
         "--diagnosis",
         type=bool,
         default=False,
-        help="Diagnosis to use.",
+        help="Diagnosis task flag (stored as metadata; does not affect data loading).",
     )
     parser.add_argument(
         "--time_to_event",
         type=bool,
         default=False,
-        help="Time to event to use.",
+        help="Time-to-event task flag (stored as metadata; does not affect data loading).",
     )
 
     parser.add_argument(
@@ -60,6 +60,16 @@ def parse_args():
         type=str,
         default=None,
         help="User query, e.g. Predict dementia risk within 3 years for patient id 123.",
+    )
+
+    parser.add_argument(
+        "--file_paths",
+        type=str,
+        default=None,
+        help=(
+            "JSON string mapping agent_name → file_paths dict for local mode. "
+            'E.g. \'{"ehr_agent": {"train_data": "X_ehr_train.pkl", "test_data": "X_ehr_test.pkl"}}\''
+        ),
     )
 
     return parser.parse_args()
@@ -73,6 +83,8 @@ def main():
         task = f"Predict dementia risk after {args.year} years for patient id {args.patient_id}"
 
     try:
+        file_paths = json.loads(args.file_paths) if args.file_paths else None
+
         # Initialize SuperAgent
         orchestrator = SuperAgent(llm_engine_name=args.llm_engine)
 
@@ -84,7 +96,7 @@ def main():
             institution=args.institution,
             diagnosis=args.diagnosis,
             time_to_event=args.time_to_event,
-            volume=True
+            file_paths=file_paths,
         )
 
         # Extract and display results
