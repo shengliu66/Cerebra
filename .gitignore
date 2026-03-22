@@ -37,6 +37,9 @@ Thumbs.db
 .env.*
 *.env
 
+# Tests
+# tests/
+
 # Project-generated outputs
 logs/
 cerebra_cache/
@@ -44,3 +47,8 @@ cerebra_cache/
 # Runtime files
 *.log
 *.pid
+
+**/.ipynb_checkpoints/
+
+
+tests/

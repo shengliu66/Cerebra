@@ -70,46 +70,11 @@ CEREBRA_EHR_HEADER_PATH=/path/to/ehr_headers.txt
 MRI_BASE_PATH=/path/to/MRI_scans/
 ```
 
-## 🗂️ Data (Database) Setup
+## 🗂️ Data Agent
 
-This project uses file-based clinical datasets (pickle/CSV), not a SQL database.
-The data loading logic is implemented in `cerebra/agents/data_agent.py`.
+`DataAgent` (`cerebra/agents/data_agent.py`) is the entry point for all data access. It supports four modes: `local` (offline `.pkl`/`.csv` files), `training` (PostgreSQL cohort retrieval + train/val/test split), `inference` (single-patient history, no labels), and `exploration` (ad hoc schema/cohort/history queries).
 
-
-### 📍 dataset format
-
-- NYU rolling data root: `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/20251207/rolling_not_long_island/`
-- LongIsland rolling data root: `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/20251207/rolling_long_island/`
-- Diagnosis data:
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/diagnosis_not_long_island/`
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/diagnosis_long_island/`
-- Time-to-event data:
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/mri_indexed_not_long_island/time_to_event/`
-  - `/gpfs/data/razavianlab/longchen/agentic/data/nyu_dataset/mri_indexed_long_island/time_to_event/`
-
-### 📦 Required files (by task mode)
-
-For standard prediction (`diagnosis=False`, `time_to_event=False`), data is loaded from:
-`<root>/180days_blackout_<year>yr_label/`
-
-Common label files:
-
-- `Y_train.pkl`
-- `Y_val.pkl`
-- `Y_test.pkl`
-
-Agent-specific feature files:
-
-- EHR: `X_ehr_train_4447_header_phecode.pkl`, `X_ehr_val_4447_header_phecode.pkl`, `X_ehr_test_4447_header_phecode.pkl`
-- Notes: `X_note_train.pkl`, `X_note_val.pkl`, `X_note_test.pkl`
-- MRI path mode: `X_mri_train.pkl`, `X_mri_val.pkl`, `X_mri_test.pkl`
-- MRI volume mode: `X_mri_volume_train.csv`, `X_mri_volume_val.csv`, `X_mri_volume_test.csv`
-
-If `time_to_event=True`, additional label files are required:
-
-- `Y_time_to_event_train.pkl`
-- `Y_time_to_event_val.pkl`
-- `Y_time_to_event_test.pkl`
+See [`cerebra/tools/data_agent/README.md`](cerebra/tools/data_agent/README.md) for full usage, data formats, and SQL mode details.
 
 ## 🚀 Running the system
 

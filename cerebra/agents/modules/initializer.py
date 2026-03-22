@@ -80,6 +80,7 @@ class Initializer:
                                     'user_metadata': getattr(tool_instance, 'user_metadata', {}), # This is a placeholder for user-defined metadata
                                     'evaluation_criteria': getattr(tool_instance, 'evaluation_criteria', {}),
                                     'require_llm_engine': getattr(obj, 'require_llm_engine', False),
+                                    'import_path': import_path,
                                 }
                                 # print(f"Metadata for {name}: {self.toolbox_metadata[name]}")
                             except Exception as e:
@@ -98,8 +99,8 @@ class Initializer:
             print(f"Checking availability of {tool_name}...")
 
             try:
-                # Import the tool module
-                module_name = f"tools.{self.agent_name}.{tool_name.lower().replace('_tool', '')}.tool"
+                # Use the import path recorded during loading (avoids CamelCase → path bugs)
+                module_name = tool_data.get('import_path', f"tools.{self.agent_name}.{tool_name.lower()}.tool")
                 module = importlib.import_module(module_name)
 
                 # Get the tool class

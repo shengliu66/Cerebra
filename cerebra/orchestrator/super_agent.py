@@ -20,7 +20,7 @@ class SuperAgent(BaseOrchestrator):
             **kwargs
         )
 
-    def run(self, task: str, patient_id: str, year: int = 1, institution: str = "NYU", diagnosis: bool = False, time_to_event: bool = False, volume: bool = False) -> Metadata:
+    def run(self, task: str, patient_id: str, year: int = 1, institution: str = "NYU", diagnosis: bool = False, time_to_event: bool = False, volume: bool = False, file_paths: Dict[str, Dict[str, str]] = None) -> Metadata:
         """
         Run the super agent with internal data loading
 
@@ -52,7 +52,7 @@ If the task is not related to the enabled agents, or the task is beyond your cap
         """
         orchestration_task = system_prompt.format(task=task)
         # Use BaseOrchestrator's execute method with Dataset input
-        result_dataset = super().run(orchestration_task, patient_id=patient_id, year=year, institution=institution, diagnosis=diagnosis, time_to_event=time_to_event, volume=volume)
+        result_dataset = super().run(orchestration_task, patient_id=patient_id, year=year, institution=institution, diagnosis=diagnosis, time_to_event=time_to_event, volume=volume, file_paths=file_paths)
 
         # Add final orchestration metadata
         final_info = result_dataset.get_metadata_info()

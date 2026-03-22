@@ -6,6 +6,12 @@ import uuid
 
 # cerebra/agents/image_agent.py
 class ImageAgent(LightweightAgent):
+    data_descriptions = {
+        "train_data":      "MRI data for training, list of paths to MRI files",
+        "validation_data": "MRI data for validation, list of paths to MRI files",
+        "test_data":       "MRI data for testing, list of paths to MRI files",
+    }
+
     def __init__(self, llm_engine_name: str = "gpt-4o"):
         super().__init__(
             agent_name="image_agent",

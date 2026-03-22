@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, Union
 import os
 import re
 import uuid
+import pandas as pd
 from cerebra.agents.modules.planner import Planner
 from cerebra.agents.modules.memory import Memory
 from cerebra.agents.modules.executor import Executor
@@ -222,7 +223,7 @@ class BaseOrchestrator:
                 # Create initial dataset from input data
                 from cerebra.agents.data_agent import DataAgent
                 data_agent = DataAgent()
-                input_metadata = data_agent.run(f"Load initial data for {agent_name}", agent_name=agent_name, patient_id=self.patient_id, year=self.year, institution=self.institution, diagnosis=self.diagnosis, time_to_event=self.time_to_event, volume=self.volume)
+                input_metadata = data_agent.run(mode="local", file_paths=self.file_paths.get(agent_name, {}), agent_name=agent_name, patient_id=self.patient_id)
                 self.current_metadata = input_metadata
             
 
@@ -233,13 +234,19 @@ class BaseOrchestrator:
             self.result_dict_merged[f"{agent_name}_outputs"] = result_dict
             
             # TODO: this is a hack to get the image path for the summary agent
-            image_input_data = data_agent.run(f"Load initial data for image_agent", agent_name="image_agent", patient_id=self.patient_id, year=self.year, institution=self.institution, diagnosis=self.diagnosis, time_to_event=self.time_to_event, volume=False)
+            image_input_data = data_agent.run(mode="local", file_paths=self.file_paths.get("image_agent", {}), agent_name="image_agent", patient_id=self.patient_id)
             # Load the test_data from the saved_path using pickle
             import pickle
             test_data_path = image_input_data.get_metadata_info()["dataset"]['test_data']['saved_path']
             with open(test_data_path, "rb") as f:
                 test_data_loaded = pickle.load(f)
-            self.result_dict_merged["image_path"] = test_data_loaded[0]
+            if isinstance(test_data_loaded, pd.DataFrame):
+            # CSV-based image data (e.g. MRI volumes) — no file path available
+                self.result_dict_merged["image_path"] = None
+            elif isinstance(test_data_loaded, list) and len(test_data_loaded) > 0:
+                self.result_dict_merged["image_path"] = test_data_loaded[0]
+            else:
+                self.result_dict_merged["image_path"] = None
             self.result_dict_merged["patient_id"] = self.patient_id
             self.result_dict_merged["year"] = self.year
             self.result_dict_merged["institution"] = self.institution
@@ -350,7 +357,7 @@ class BaseOrchestrator:
     # ——————————————————————————————————————————
     # COMPOSED RUN LOOP
     # ——————————————————————————————————————————
-    def run(self, task: str, patient_id: str = None, year: int = 1, institution: str = "NYU", diagnosis: bool = False, time_to_event: bool = False, volume: bool = False) -> Union[Dict[str, Any], Metadata]:
+    def run(self, task: str, patient_id: str = None, year: int = 1, institution: str = "NYU", diagnosis: bool = False, time_to_event: bool = False, volume: bool = False, file_paths: Dict[str, Dict[str, str]] = None) -> Union[Dict[str, Any], Metadata]:
         """
         Full Observe → Analyze → [Plan → Execute → Verify]* loop for orchestrating agents.
         Returns Dataset if input was Dataset, otherwise returns Dict for backward compatibility.
@@ -361,6 +368,7 @@ class BaseOrchestrator:
         self.diagnosis = diagnosis
         self.time_to_event = time_to_event
         self.volume = volume
+        self.file_paths = file_paths or {}
         # OBSERVE first
         self.observe(task)
 

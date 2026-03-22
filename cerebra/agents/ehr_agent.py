@@ -4,6 +4,12 @@ from cerebra.utils.metadata import Metadata
 import os
 
 class EHRAgent(LightweightAgent):
+    data_descriptions = {
+        "train_data":      "EHR data for training, list of sparse matrices",
+        "validation_data": "EHR data for validation, list of sparse matrices",
+        "test_data":       "EHR data for testing, list of sparse matrices",
+    }
+
     def __init__(self, llm_engine_name: str = "gpt-4o"):
         super().__init__(
             agent_name="ehr_agent",

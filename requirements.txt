@@ -16,6 +16,8 @@ tenacity==9.0.0
 wikipedia==1.4.0
 vllm==0.8.5
 pandas==2.3.0
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
 scikit-learn>=1.0.0
 scipy>=1.7.0
 shap==0.48.0
