@@ -65,7 +65,6 @@ CEREBRA_EHR_HEADER_PATH=/path/to/ehr_headers.txt
 # MRI data path (used for image agent visualization)
 # Directory containing MRI scan files in .mgz format
 # Files should be named as: {subject_id}_{session_id}_mri.mgz
-# Example: /gpfs/data/razavianlab/mri_scans/
 MRI_BASE_PATH=/path/to/MRI_scans/
 ```
 
