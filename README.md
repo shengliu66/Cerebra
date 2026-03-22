@@ -12,7 +12,7 @@
   <a href="https://cerebra-health.com">
     <img alt="Website" src="https://img.shields.io/badge/Website-Visit-0A66C2" />
   </a>
-  <a href="https://example.com/demo">
+  <a href="https://app.cerebra-health.com">
     <img alt="Demo" src="https://img.shields.io/badge/Demo-Try%20It-16A34A" />
   </a>
 </p>
