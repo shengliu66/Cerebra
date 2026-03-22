@@ -5,7 +5,6 @@
 <p align="center">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" />
   <img alt="LLM" src="https://img.shields.io/badge/LLM-Agent%20Orchestration-7B61FF" />
-  <img alt="Data" src="https://img.shields.io/badge/Data-Pickle%20%26%20CSV-2E8B57" />
   <a href="https://example.com/paper">
     <img alt="Paper" src="https://img.shields.io/badge/Paper-Read%20Now-EA4335" />
   </a>
