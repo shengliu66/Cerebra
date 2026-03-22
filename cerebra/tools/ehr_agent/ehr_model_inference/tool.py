@@ -33,8 +33,9 @@ class EHR_Model_Inference_Tool(BaseTool):
                 {
                     "command": (
                         "result = tool.execute(\n"
-                       "    test_data_path=dataset['test_data']['saved_path'],\n"
-                        "    trained_model_path=model['trained_model']['saved_path']\n"
+                        "    test_data_path=dataset['test_data']['saved_path'],\n"
+                        "    trained_model_path=model['trained_model']['saved_path'],\n"
+                        "    ehr_header_path=dataset.get('ehr_headers', {}).get('saved_path')\n"
                         ")"
                     ),
                     "description": "Run inference on EHR test set with predictions and risk scores/median survival times."

@@ -174,11 +174,12 @@ class DataAgent(LightweightAgent):
     ) -> Metadata:
         """Load pre-processed data files and return as Metadata."""
 
-        # 1. Load all files except demographics (handled separately)
+        # 1. Load all files except keys handled separately below
+        _SKIP_KEYS = {"demographics", "trained_model", "ehr_headers"}
         loaded: Dict[str, Any] = {
             key: self._load_data_file(path)
             for key, path in file_paths.items()
-            if key != "demographics"
+            if key not in _SKIP_KEYS
         }
 
         # 2. Agent-specific preprocessing
@@ -215,7 +216,7 @@ class DataAgent(LightweightAgent):
             test_raw = self._load_data_file(file_paths["test_data"])
             if test_raw is not None:
                 if agent_name == "ehr_agent":
-                    raw_data = self.get_ehr_nonzero_features(test_raw[patient_idx])
+                    raw_data = self.get_ehr_nonzero_features(test_raw[patient_idx], ehr_header_path=file_paths.get("ehr_headers"))
                 elif agent_name == "note_agent":
                     raw_data = self.get_raw_notes_with_indices(test_raw[patient_idx])
                 elif agent_name == "image_agent":
@@ -257,10 +258,27 @@ class DataAgent(LightweightAgent):
             for k in saved_paths
         }
 
+        # Expose pre-trained model path if provided
+        model_metadata = {}
+        if file_paths.get("trained_model"):
+            model_metadata["trained_model"] = {
+                "saved_path": file_paths["trained_model"],
+                "description": "Pre-trained model provided via file_paths",
+                "configuration": {},
+            }
+
+        # Expose EHR header file path directly in dataset (no env var needed)
+        if file_paths.get("ehr_headers"):
+            output_dataset["ehr_headers"] = {
+                "saved_path": file_paths["ehr_headers"],
+                "description": "EHR feature header file (one name per line)",
+                "configuration": {},
+            }
+
         self.metadata = Metadata.create_agent_output(
             status="success",
             dataset=output_dataset,
-            model={},
+            model=model_metadata,
             cache_directory=os.path.join(CACHE_DIR, "data_agent"),
             agent_name="data_agent",
         )
@@ -374,9 +392,9 @@ class DataAgent(LightweightAgent):
             "total_paragraphs": sum(len(n["paragraphs"]) for n in indexed_notes),
         }
 
-    def get_ehr_nonzero_features(self, ehr_data) -> str:
+    def get_ehr_nonzero_features(self, ehr_data, ehr_header_path: str = None) -> str:
         """Return non-zero EHR features for a patient as an XML string."""
-        ehr_header_names = load_ehr_headers()
+        ehr_header_names = load_ehr_headers(explicit_path=ehr_header_path)
         if len(ehr_data.shape) > 1:
             patient_vector = ehr_data.max(axis=0).toarray().flatten()
         else:

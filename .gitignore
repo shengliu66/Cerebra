@@ -49,3 +49,6 @@ cerebra_cache/
 *.pid
 
 **/.ipynb_checkpoints/
+
+
+tests/
