@@ -38,7 +38,7 @@ Thumbs.db
 *.env
 
 # Tests
-tests/
+# tests/
 
 # Project-generated outputs
 logs/
