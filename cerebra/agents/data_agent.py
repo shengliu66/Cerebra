@@ -187,14 +187,15 @@ class DataAgent(LightweightAgent):
 
         # 3. Filter test split to a single patient if requested
         if patient_id is not None:
+            patient_idx = int(patient_id)
             if loaded.get("test_data") is not None:
                 test = loaded["test_data"]
                 loaded["test_data"] = (
-                    test.loc[[patient_id]] if isinstance(test, pd.DataFrame)
-                    else [test[patient_id]]
+                    test.iloc[[patient_idx]] if isinstance(test, pd.DataFrame)
+                    else [test[patient_idx]]
                 )
             if loaded.get("test_labels") is not None:
-                loaded["test_labels"] = [loaded["test_labels"][patient_id]]
+                loaded["test_labels"] = [loaded["test_labels"][patient_idx]]
 
         # 4. Log sample counts
         for split in ("train_labels", "validation_labels", "test_labels"):
@@ -206,7 +207,7 @@ class DataAgent(LightweightAgent):
         if "demographics" in file_paths and patient_id is not None:
             demo_list = self._load_data_file(file_paths["demographics"])
             if demo_list is not None:
-                demographic_info = self.get_demographic_info(demo_list, patient_id)
+                demographic_info = self.get_demographic_info(demo_list, patient_idx)
 
         # 6. Raw data for downstream use
         raw_data = None
@@ -214,9 +215,9 @@ class DataAgent(LightweightAgent):
             test_raw = self._load_data_file(file_paths["test_data"])
             if test_raw is not None:
                 if agent_name == "ehr_agent":
-                    raw_data = self.get_ehr_nonzero_features(test_raw[patient_id])
+                    raw_data = self.get_ehr_nonzero_features(test_raw[patient_idx])
                 elif agent_name == "note_agent":
-                    raw_data = self.get_raw_notes_with_indices(test_raw[patient_id])
+                    raw_data = self.get_raw_notes_with_indices(test_raw[patient_idx])
                 elif agent_name == "image_agent":
                     raw_data = test_raw
 

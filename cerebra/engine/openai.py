@@ -95,14 +95,8 @@ class ChatOpenAI(EngineLM, CachedEngine):
         
         # Initialize OpenAI client based on whether NYU HIPAA is enabled
         if self.use_nyu_hipaa:
-            if os.getenv("NYU_HIPAA_API_KEY") is None:
-                raise ValueError("Please set the NYU_HIPAA_API_KEY environment variable to use NYU HIPAA GPT service.")
-            
-            self.client = OpenAI(
-                base_url="https://kong-api.prod1.nyumc.org/gpt-4o/v1.3.0",
-                api_key=os.getenv("NYU_HIPAA_API_KEY"),
-                default_headers={"api-key": os.getenv("NYU_HIPAA_API_KEY")}
-            )
+            # TODO: if you would like to use hipaa compliant GPT, implement your API initialization here
+            raise NotImplementedError("If you would like to use hipaa compliant GPT, implement your API initialization here")
         else:
             if os.getenv("OPENAI_API_KEY") is None:
                 raise ValueError("Please set the OPENAI_API_KEY environment variable if you'd like to use OpenAI models.")
@@ -110,14 +104,6 @@ class ChatOpenAI(EngineLM, CachedEngine):
             self.client = OpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
             )
-
-        # For NYU debug only
-        # self.client = OpenAI(
-        #     base_url="https://kong-api.prod1.nyumc.org/gpt-4o/v1.3.0",
-        #     api_key=os.getenv("OPENAI_API_KEY"),
-        #     default_headers={"api-key": os.getenv("OPENAI_API_KEY")}
-        # )
-
 
     @retry(wait=wait_random_exponential(min=1, max=5), stop=stop_after_attempt(5))
     def generate(self, content: Union[str, List[Union[str, bytes]]], system_prompt=None, **kwargs):

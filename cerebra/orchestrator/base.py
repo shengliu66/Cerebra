@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, Union
 import os
 import re
 import uuid
+import pandas as pd
 from cerebra.agents.modules.planner import Planner
 from cerebra.agents.modules.memory import Memory
 from cerebra.agents.modules.executor import Executor
@@ -239,7 +240,13 @@ class BaseOrchestrator:
             test_data_path = image_input_data.get_metadata_info()["dataset"]['test_data']['saved_path']
             with open(test_data_path, "rb") as f:
                 test_data_loaded = pickle.load(f)
-            self.result_dict_merged["image_path"] = test_data_loaded[0]
+            if isinstance(test_data_loaded, pd.DataFrame):
+            # CSV-based image data (e.g. MRI volumes) — no file path available
+                self.result_dict_merged["image_path"] = None
+            elif isinstance(test_data_loaded, list) and len(test_data_loaded) > 0:
+                self.result_dict_merged["image_path"] = test_data_loaded[0]
+            else:
+                self.result_dict_merged["image_path"] = None
             self.result_dict_merged["patient_id"] = self.patient_id
             self.result_dict_merged["year"] = self.year
             self.result_dict_merged["institution"] = self.institution
