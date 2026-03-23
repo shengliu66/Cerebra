@@ -18,7 +18,7 @@
 
 ## 🧠 Overview
 
-Cerebra is an AI Copilot that works along with physicians to make decisions. 
+Cerebra is a multidisciplinary AI board that works along with physicians to make clinical decisions. 
 
 ## ⚙️ Installation
 
