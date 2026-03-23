@@ -18,7 +18,7 @@
 
 ## 🧠 Overview
 
-Cerebra is an LLM-powered framework for clinical/evaluation workflows.
+Cerebra is an AI Copilot that works along with physicians to make decisions. 
 
 ## ⚙️ Installation
 
