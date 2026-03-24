@@ -102,6 +102,25 @@ python tasks/run_cerebra.py \
   --llm_engine gpt-4o \
   --output_json cerebra_cache/run_patient_0.json
 ```
+## Resources
+
+### Inspiration
+
+This project draws inspiration from several remarkable projects:
+
+- 📘 [TextGrad](https://github.com/mert-y/textgrad) – We admire and appreciate TextGrad for its innovative and elegant framework design.
+- 📗 [OctoTools](https://github.com/octotools/octotools) – A open-sourced agentic framework for tool usage.
+
+
+### Citation
+```bibtex
+@article{liu2026cerebra,
+    title={Cerebra: A Multidisciplinary AI Board for Multimodal Dementia Characterization and Risk Assessment},
+    author={Liu, Sheng and Chen, Long and Zhao, Zeyun and Gou, Qinglin and Wei, Qingyue and Masurkar, Arjun and Spiegler, Kevin M. and Kuball, Philip and Bray, Stefania C. and Bernath, Megan and Willis, Deanna R. and Bian, Jiang and Xing, Lei and Topol, Eric and Cho, Kyunghyun and Huang, Yu and Fang, Ruogu and Razavian, Narges and Zou, James},
+    journal = {arXiv preprint arXiv:2603.21597},
+    year={2026}
+}
+```
 
 ### Supported LLM Engines
 
@@ -125,20 +144,7 @@ We support a broad range of LLM engines, including GPT-4o, Claude 3.5 Sonnet, Ge
 > Note: If you are using TogetherAI models, please ensure have the prefix 'together-' in the model string, for example, `together-meta-llama/Llama-4-Scout-17B-16E-Instruct`. For VLLM models, use the prefix 'vllm-', for example, `vllm-meta-llama/Llama-4-Scout-17B-16E-Instruct`. For LiteLLM, use the prefix 'litellm-', for example, `litellm-gpt-4o` or `litellm-claude-3-sonnet-20240229`. For Ollama, use the prefix 'ollama-', for example, `ollama-qwen3:latest`. For Forge, use the prefix 'forge/', for example, `forge/OpenAI/gpt-4o-mini`, and set `FORGE_API_KEY` (optional `FORGE_API_BASE`). For other custom engines, you can edit the [factory.py](https://github.com/OctoTools/OctoTools/blob/main/octotools/engine/factory.py) file and add its interface file to add support for your engine. Your pull request will be warmly welcomed!
 
 
-## Resources
 
-### Inspiration
-
-This project draws inspiration from several remarkable projects:
-
-- 📘 [TextGrad](https://github.com/mert-y/textgrad) – We admire and appreciate TextGrad for its innovative and elegant framework design.
-- 📗 [OctoTools](https://github.com/octotools/octotools) – A open-sourced agentic framework for tool usage.
-
-
-### Citation
-```bibtex
-}
-```
 
 ### Contributors
 
