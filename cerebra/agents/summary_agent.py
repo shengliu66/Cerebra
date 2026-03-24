@@ -40,12 +40,12 @@ class SummaryAgent(LightweightAgent):
         self.task = task  # Task type (e.g., "classification_prediction")
         # Initialize multimodal LLM for image analysis
         from cerebra.engine.factory import create_llm_engine
-        self.llm_engine_mm = create_llm_engine(model_string="gpt-4o", is_multimodal=True, use_nyu_hipaa=True)
+        self.llm_engine_mm = create_llm_engine(model_string=llm_engine_name, is_multimodal=True, use_nyu_hipaa=True)
         
         # Initialize multi-agent debate tool
         from cerebra.tools.summary_agent.multi_agent_debate.tool import Multi_Agent_Debate_Tool
         self.debate_tool = Multi_Agent_Debate_Tool()
-        self.debate_tool.set_llm_engine(model_string="gpt-4o", is_multimodal=False, use_nyu_hipaa=True)
+        self.debate_tool.set_llm_engine(model_string=llm_engine_name, is_multimodal=False, use_nyu_hipaa=True)
     
     def _get_data_path_suffix(self, year: int, modality: str) -> str:
         """Generate path suffix based on year, task, and modality.
