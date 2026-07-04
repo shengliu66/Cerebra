@@ -36,6 +36,8 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
+Installation of all required packages takes approximately 30 minutes.
+
 ## 🔐 Environment Configuration
 
 Create a `.env` file under `cerebra/agents/` and configure API keys.
@@ -102,6 +104,15 @@ python tasks/run_cerebra.py \
   --llm_engine gpt-4o \
   --output_json cerebra_cache/run_patient_0.json
 ```
+
+This script will produce an output JSON with risk prediction, evidences from each agents and additional metadata. All results from the manuscript can be reproduced from the output JSON files.
+
+### 📦 Example dataset
+A simulated example dataset for evaluation can be found in `dataset/example_1`. An actual MRI file path is required in `X_mri_test_file_path.txt`. Training and validation dataset can be formated similarly.
+
+### ⏰ Estimated run time
+Evaluation of one case using Cerebra will take ~20s. Training of the underlying ML models takes extra time. Per our experiment, all ML models are trained in ~10 minutes.
+
 ## Resources
 
 ### Inspiration
