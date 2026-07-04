@@ -156,10 +156,18 @@ We support a broad range of LLM engines, including GPT-4o, Claude 3.5 Sonnet, Ge
 
 
 
-
 ### Contributors
 
 We are truly looking forward to open-source contributions to Cerebra! If you are interested in contributing, collaborating, or reporting issues, don't hesitate to contact us at [shengliu888@gmail.com](mailto:hengliu888@gmail.com). 
 
 We are also looking forward to your feedback and suggestions!
+
+### License
+
+Unless otherwise noted:
+
+- **Source code** is licensed under the **MIT License**. See [LICENSE](LICENSE).
+
+- **Documentation, figures, and example datasets** are licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)**. See [LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0).
+
 
